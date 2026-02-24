@@ -5,6 +5,11 @@
     <title>Blue Tree's Nook</title>
     <style>
         /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body { 
             max-width: 900px; 
             margin: 20px auto; 
@@ -12,34 +17,82 @@
             font-family: Arial; 
             background-color: #1A237E; /* 群青蓝背景 */
             color: white;
+            position: relative;
+            min-height: 100vh;
         }
+
+        /* 夜空背景层 */
+        .night-sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        /* 月亮 */
+        .moon {
+            position: fixed;
+            top: 60px;
+            right: 10%;
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 200, 0.3);
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(255,255,255,0.2);
+        }
+        /* 星星 */
+        .star {
+            position: absolute;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 0.8; }
+        }
+
+        /* 大树（能看清） */
+        .big-tree {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 800px;
+            opacity: 0.22;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 20%, #fff 120px, transparent 122px),
+                linear-gradient(to top, #fff 150px, transparent 152px),
+                linear-gradient(25deg, #fff 70px, transparent 72px),
+                linear-gradient(-25deg, #fff 70px, transparent 72px);
+        }
+
         .diary { 
             margin: 30px 0; 
             padding: 15px; 
             border: 1px solid #eee; 
             border-radius: 8px; 
             background-color: rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
         }
         
-        /* 照片滑动容器（适配两张并排） */
-        .photo-slider {
-            position: relative;
-            margin: 30px 0;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-        /* 滑动轨道：横向排列 */
-        .slider-track {
+        /* 照片：一行三张 */
+        .photo-grid {
             display: flex;
-            gap: 15px; /* 两张照片之间的间距 */
-            transition: transform 0.5s ease;
-            padding: 10px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 10;
         }
-        /* 核心：每张照片占容器约一半，实现两张并排 */
         .photo-item {
-            flex: 0 0 calc(50% - 7.5px); /* 50%宽度 - 一半间距，刚好两张并排 */
-            min-width: 200px; /* 手机端最小宽度，避免太窄 */
+            width: calc(33.333% - 7px);
         }
         .photo-item img {
             width: 100%;
@@ -47,35 +100,6 @@
             border-radius: 4px;
             border: 2px solid white;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .photo-item img:hover {
-            transform: scale(1.03);
-        }
-        
-        /* 滑动按钮 */
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 10;
-        }
-        .prev-btn {
-            left: 10px;
-        }
-        .next-btn {
-            right: 10px;
-        }
-        .slider-btn:hover {
-            background-color: rgba(255, 255, 255, 0.5);
         }
         
         /* 图片放大弹窗 */
@@ -106,89 +130,72 @@
     </style>
 </head>
 <body>
-    <h1>🌲 Blue Tree's Nook </h1>
-    
-    <!-- 日记区域 -->
-    <div class="diary">
-        <h3>2026年2月24日 星期二</h3>
-        <p>上班摸鱼研究了好久 终于成功了</p>
-        <p>一些回家的故事 希望新的一年我们顺顺利利 心想事成</p>
+
+<div class="night-sky">
+    <div class="moon"></div>
+</div>
+<div class="big-tree"></div>
+
+<h1>🌲 Blue Tree's Nook </h1>
+
+<!-- 日记区域 -->
+<div class="diary">
+    <h3>2026年2月24日 星期二</h3>
+    <p>上班摸鱼研究了好久 终于成功了</p>
+    <p>一些回家的故事 希望新的一年我们顺顺利利 心想事成</p>
+</div>
+
+<h3>马年春节 🐴🧧🎆</h3>
+
+<!-- 照片一行三张展示 -->
+<div class="photo-grid">
+    <div class="photo-item">
+        <img src="PICT0040.jpg" alt="家的故事1" onclick="openModal(this.src)">
     </div>
-
-    <!-- 两张照片并排滑动区域 -->
-    <h3>马年春节 🐴🧧🎆</h3>
-    <div class="photo-slider" id="photoSlider">
-        <button class="slider-btn prev-btn" onclick="slidePhotos(-1)">←</button>
-        <button class="slider-btn next-btn" onclick="slidePhotos(1)">→</button>
-        
-        <!-- 滑动轨道：默认显示两张，超出可滑动 -->
-        <div class="slider-track" id="sliderTrack">
-            <!-- 第1张 -->
-            <div class="photo-item">
-                <img src="PICT0040.jpg" alt="家的故事1" onclick="openModal(this.src)">
-            </div>
-            <!-- 第2张（和第1张并排） -->
-            <div class="photo-item">
-                <img src="HZ260218-3.jpg" alt="家的故事2" onclick="openModal(this.src)">
-            </div>
-            <!-- 更多照片（滑动时显示） -->
-            <div class="photo-item">
-                <img src="HZ260218-4.jpg" alt="家的故事3" onclick="openModal(this.src)">
-            </div>
-            <div class="photo-item">
-                <img src="HZ260218-5.jpg" alt="家的故事4" onclick="openModal(this.src)">
-            </div>
-        </div>
+    <div class="photo-item">
+        <img src="HZ260218-3.jpg" alt="家的故事2" onclick="openModal(this.src)">
     </div>
-
-    <!-- 图片放大弹窗 -->
-    <div class="modal" id="imgModal" onclick="closeModal()">
-        <span class="close-btn" onclick="closeModal()">×</span>
-        <img class="modal-content" id="modalImg">
+    <div class="photo-item">
+        <img src="HZ260218-4.jpg" alt="家的故事3" onclick="openModal(this.src)">
     </div>
+    <div class="photo-item">
+        <img src="HZ260218-5.jpg" alt="家的故事4" onclick="openModal(this.src)">
+    </div>
+</div>
 
-    <!-- 修复后的滑动+放大脚本 -->
-    <script>
-        // 初始化变量（改为固定步长，避免加载时机问题）
-        let currentSlide = 0; // 用“组”来计数，每组2张照片
-        const sliderTrack = document.getElementById('sliderTrack');
-        // 固定滑动步长（适配两张并排，每次滑一组）
-        const slideStep = 100; // 按百分比滑动，更稳定
+<!-- 图片放大弹窗 -->
+<div class="modal" id="imgModal" onclick="closeModal()">
+    <span class="close-btn" onclick="closeModal()">×</span>
+    <img class="modal-content" id="modalImg">
+</div>
 
-        // 修复核心：按“组”滑动，逻辑更简单
-        function slidePhotos(direction) {
-            // 计算总组数（总照片数/每组2张）
-            const totalPhotos = document.querySelectorAll('.photo-item').length;
-            const totalGroups = Math.ceil(totalPhotos / 2) - 1; // 减1是因为默认显示第1组
-            
-            // 更新当前组
-            currentSlide += direction;
-            // 边界限制：不能滑出最左/最右
-            if (currentSlide < 0) currentSlide = 0;
-            if (currentSlide > totalGroups) currentSlide = totalGroups;
-            
-            // 执行滑动（按百分比，稳定不失效）
-            const slideDistance = -currentSlide * slideStep;
-            sliderTrack.style.transform = `translateX(${slideDistance}%)`;
-        }
+<script>
+    function openModal(src) {
+        document.getElementById("imgModal").style.display = "flex";
+        document.getElementById("modalImg").src = src;
+    }
+    function closeModal() {
+        document.getElementById("imgModal").style.display = "none";
+    }
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") closeModal();
+    });
 
-        // 打开放大弹窗
-        function openModal(imgSrc) {
-            const modal = document.getElementById('imgModal');
-            const modalImg = document.getElementById('modalImg');
-            modal.style.display = 'flex';
-            modalImg.src = imgSrc;
-        }
+    // 少量星星
+    const sky = document.querySelector(".night-sky");
+    for(let i=0; i<40; i++){
+        let star = document.createElement("div");
+        star.classList.add("star");
+        let size = Math.random()*2 + 1;
+        star.style.width = size + "px";
+        star.style.height = size + "px";
+        star.style.left = Math.random()*100 + "%";
+        star.style.top = Math.random()*100 + "%";
+        star.style.animationDelay = Math.random()*3 + "s";
+        sky.appendChild(star);
+    }
+</script>
 
-        // 关闭弹窗
-        function closeModal() {
-            document.getElementById('imgModal').style.display = 'none';
-        }
-
-        // ESC键关闭弹窗
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeModal();
-        });
-    </script>
 </body>
 </html>
+

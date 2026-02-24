@@ -5,10 +5,33 @@
     <title>我的日常记录 | 照片相册</title>
     <!-- 简单样式，让页面不丑 -->
     <style>
-        body { max-width: 800px; margin: 20px auto; padding: 0 20px; font-family: Arial; }
-        .diary { margin: 30px 0; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
-        .photos { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
-        .photos img { width: 200px; height: auto; border-radius: 4px; }
+        body { 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 0 20px; 
+            font-family: Arial; 
+            background-color: #1A237E; /* 群青蓝的标准色值 */
+            color: white; /* 把文字改成白色，避免和蓝色背景混在一起看不清 */
+        }
+        .diary { 
+            margin: 30px 0; 
+            padding: 15px; 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+            background-color: rgba(255, 255, 255, 0.1); /* 日记区域加半透明背景，更美观 */
+        }
+        .photos { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin: 20px 0; 
+        }
+        .photos img { 
+            width: 200px; 
+            height: auto; 
+            border-radius: 4px; 
+            border: 2px solid white; /* 给照片加白色边框，和背景更搭 */
+        }
     </style>
 </head>
 <body>
@@ -27,6 +50,7 @@
         <img src="PICT0040.jpg" alt="生活照1">
         <img src="HZ260218-3.jpg" alt="生活照2">
         <img src="HZ260218-4.jpg" alt="生活照2">
+        <img src="HZ260218-5.jpg" alt="生活照2">
     </div>
 </body>
 </html>

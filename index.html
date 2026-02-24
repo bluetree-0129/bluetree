@@ -43,12 +43,22 @@
             100% { opacity: 0.8; }
         }
 
-        .diary { 
-            margin: 30px 0; 
-            padding: 15px; 
-            border: 1px solid #eee; 
-            border-radius: 8px; 
-            background-color: rgba(255, 255, 255, 0.1);
+        /* 改成你喜欢的圆角小框样式 */
+        .note-box {
+            margin: 30px 0;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            border-left: 3px solid rgba(255,255,255,0.4);
+        }
+        .note-date {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+        .note-text {
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         /* 照片一行3张 */
@@ -99,15 +109,16 @@
 
 <body>
 
-<!-- 只保留星星 -->
+<!-- 星星 -->
 <div class="night-sky"></div>
 
 <h1>🌲 Blue Tree's Nook </h1>
 
-<div class="diary">
-    <h3>2026年2月24日</h3>
-    <p>上班摸鱼研究了好久 终于成功了</p>
-    <p>一些回家的故事 希望新的一年我们顺顺利利 心想事成</p>
+<!-- 改成你喜欢的圆角小框 -->
+<div class="note-box">
+    <div class="note-date">2026-02-24</div>
+    <div class="note-text">上班摸鱼研究了好久 终于成功了</div>
+    <div class="note-text">一些回家的故事 希望新的一年我们顺顺利利 心想事成</div>
 </div>
 
 <h3>马年春节 🐴🧧🎆</h3>
@@ -136,7 +147,7 @@
         if (e.key === "Escape") closeModal();
     });
 
-    // 生成少量星星
+    // 星星
     const sky = document.querySelector(".night-sky");
     for(let i=0; i<40; i++){
         let star = document.createElement("div");

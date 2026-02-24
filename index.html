@@ -2,40 +2,109 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的日常记录 | 照片相册</title>
-    <!-- 简单样式，让页面不丑 -->
+    <title>Blue Tree Haven</title> <!-- 用了推荐的治愈风标题 -->
     <style>
+        /* 基础样式 */
         body { 
             max-width: 800px; 
             margin: 20px auto; 
             padding: 0 20px; 
             font-family: Arial; 
-            background-color: #1A237E; /* 群青蓝的标准色值 */
-            color: white; /* 把文字改成白色，避免和蓝色背景混在一起看不清 */
+            background-color: #1A237E; /* 群青蓝背景 */
+            color: white;
         }
         .diary { 
             margin: 30px 0; 
             padding: 15px; 
             border: 1px solid #eee; 
             border-radius: 8px; 
-            background-color: rgba(255, 255, 255, 0.1); /* 日记区域加半透明背景，更美观 */
+            background-color: rgba(255, 255, 255, 0.1);
         }
-        .photos { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-            margin: 20px 0; 
+        
+        /* 照片滑动容器样式 */
+        .photo-slider {
+            position: relative;
+            margin: 30px 0;
+            overflow: hidden; /* 隐藏超出部分 */
+            border-radius: 8px;
         }
-        .photos img { 
-            width: 200px; 
-            height: auto; 
-            border-radius: 4px; 
-            border: 2px solid white; /* 给照片加白色边框，和背景更搭 */
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease; /* 滑动动画 */
+        }
+        .slider-item {
+            flex: 0 0 100%; /* 每张照片占满容器 */
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .slider-item img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 4px;
+            border: 2px solid white;
+            cursor: pointer; /* 鼠标悬浮显示手型 */
+            transition: transform 0.2s;
+        }
+        .slider-item img:hover {
+            transform: scale(1.02); /* 悬浮轻微放大 */
+        }
+        
+        /* 滑动按钮样式 */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .prev-btn {
+            left: 10px;
+        }
+        .next-btn {
+            right: 10px;
+        }
+        .slider-btn:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 图片放大弹窗样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>✨ 我的小世界 ✨</h1>
+    <h1>✨ Blue Tree Haven ✨</h1>
     
     <!-- 日记区域 -->
     <div class="diary">
@@ -43,14 +112,78 @@
         <p>上班摸鱼研究了好久 终于成功了</p>
     </div>
 
-    <!-- 照片相册区域 -->
-    <h3>马年春节</h3>
-    <div class="photos">
-        <!-- picture -->
-        <img src="PICT0040.jpg" alt="生活照1">
-        <img src="HZ260218-3.jpg" alt="生活照2">
-        <img src="HZ260218-4.jpg" alt="生活照2">
-        <img src="HZ260218-5.jpg" alt="生活照2">
+    <!-- 照片滑动区域 -->
+    <h3>马年春节 🐴</h3>
+    <div class="photo-slider" id="photoSlider">
+        <!-- 滑动按钮 -->
+        <button class="slider-btn prev-btn" onclick="slidePhoto(-1)">←</button>
+        <button class="slider-btn next-btn" onclick="slidePhoto(1)">→</button>
+        
+        <!-- 照片容器 -->
+        <div class="slider-wrapper" id="sliderWrapper">
+            <div class="slider-item">
+                <img src="PICT0040.jpg" alt="生活照1" onclick="openModal(this.src)">
+            </div>
+            <div class="slider-item">
+                <img src="HZ260218-3.jpg" alt="生活照2" onclick="openModal(this.src)">
+            </div>
+            <div class="slider-item">
+                <img src="HZ260218-4.jpg" alt="生活照3" onclick="openModal(this.src)">
+            </div>
+            <div class="slider-item">
+                <img src="HZ260218-5.jpg" alt="生活照4" onclick="openModal(this.src)">
+            </div>
+        </div>
     </div>
+
+    <!-- 图片放大弹窗 -->
+    <div class="modal" id="imgModal" onclick="closeModal()">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <!-- 滑动+放大功能脚本 -->
+    <script>
+        // 滑动相关变量
+        let currentIndex = 0;
+        const sliderWrapper = document.getElementById('sliderWrapper');
+        const sliderItems = document.querySelectorAll('.slider-item');
+        const totalItems = sliderItems.length;
+
+        // 照片滑动函数
+        function slidePhoto(direction) {
+            currentIndex += direction;
+            // 循环滑动（到最后一张后切回第一张，反之亦然）
+            if (currentIndex < 0) {
+                currentIndex = totalItems - 1;
+            } else if (currentIndex >= totalItems) {
+                currentIndex = 0;
+            }
+            // 计算滑动距离
+            const slideDistance = -currentIndex * 100;
+            sliderWrapper.style.transform = `translateX(${slideDistance}%)`;
+        }
+
+        // 打开图片放大弹窗
+        function openModal(imgSrc) {
+            const modal = document.getElementById('imgModal');
+            const modalImg = document.getElementById('modalImg');
+            modal.style.display = 'flex';
+            modalImg.src = imgSrc;
+        }
+
+        // 关闭图片放大弹窗
+        function closeModal() {
+            const modal = document.getElementById('imgModal');
+            modal.style.display = 'none';
+        }
+
+        // 按ESC键也能关闭弹窗
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>

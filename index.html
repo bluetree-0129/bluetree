@@ -21,36 +21,36 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
-        /* 多图滑动容器（核心：一行多图+横向滑动） */
+        /* 照片滑动容器（适配两张并排） */
         .photo-slider {
             position: relative;
             margin: 30px 0;
             width: 100%;
-            overflow: hidden; /* 隐藏超出部分 */
+            overflow: hidden;
             border-radius: 8px;
         }
-        /* 滑动轨道：横向排列所有照片 */
+        /* 滑动轨道：横向排列 */
         .slider-track {
             display: flex;
-            gap: 10px; /* 照片之间的间距 */
-            transition: transform 0.5s ease; /* 滑动动画 */
+            gap: 15px; /* 两张照片之间的间距 */
+            transition: transform 0.5s ease;
             padding: 10px 0;
         }
-        /* 单张照片样式（适配多列排版） */
+        /* 核心：每张照片占容器约一半，实现两张并排 */
         .photo-item {
-            flex: 0 0 auto; /* 不自动缩放，保持原宽度 */
-            width: 220px; /* 每张照片宽度，可调整 */
+            flex: 0 0 calc(50% - 7.5px); /* 50%宽度 - 一半间距，刚好两张并排 */
+            min-width: 200px; /* 手机端最小宽度，避免太窄 */
         }
         .photo-item img {
             width: 100%;
             height: auto;
             border-radius: 4px;
             border: 2px solid white;
-            cursor: pointer; /* 点击提示 */
+            cursor: pointer;
             transition: transform 0.2s;
         }
         .photo-item img:hover {
-            transform: scale(1.03); /* 悬浮轻微放大 */
+            transform: scale(1.03);
         }
         
         /* 滑动按钮 */
@@ -112,36 +112,31 @@
     <div class="diary">
         <h3>2026年2月24日 星期二</h3>
         <p>上班摸鱼研究了好久 终于成功了</p>
-        <p>一些回家的故事，希望新的一年顺顺利利～</p>
+        <p>一些看不太清的家的故事，祝大家新的一年顺顺利利～</p>
     </div>
 
-    <!-- 多图滑动区域（还原你要的排版） -->
-    <h3>🐴🧧🎆 </h3>
+    <!-- 两张照片并排滑动区域 -->
+    <h3>马年春节 🐴🧧</h3>
     <div class="photo-slider" id="photoSlider">
         <button class="slider-btn prev-btn" onclick="slidePhotos(-1)">←</button>
         <button class="slider-btn next-btn" onclick="slidePhotos(1)">→</button>
         
-        <!-- 照片轨道：一行显示多张，超出可滑动 -->
+        <!-- 滑动轨道：默认显示两张，超出可滑动 -->
         <div class="slider-track" id="sliderTrack">
-            <!-- 第一组照片 -->
+            <!-- 第1张 -->
             <div class="photo-item">
                 <img src="PICT0040.jpg" alt="家的故事1" onclick="openModal(this.src)">
             </div>
+            <!-- 第2张（和第1张并排） -->
             <div class="photo-item">
                 <img src="HZ260218-3.jpg" alt="家的故事2" onclick="openModal(this.src)">
             </div>
+            <!-- 如需添加更多照片，继续加即可（滑动时仍保持两张并排） -->
             <div class="photo-item">
                 <img src="HZ260218-4.jpg" alt="家的故事3" onclick="openModal(this.src)">
             </div>
             <div class="photo-item">
                 <img src="HZ260218-5.jpg" alt="家的故事4" onclick="openModal(this.src)">
-            </div>
-            <!-- 可继续添加更多照片 -->
-            <div class="photo-item">
-                <img src="new-photo1.jpg" alt="新年照片1" onclick="openModal(this.src)">
-            </div>
-            <div class="photo-item">
-                <img src="new-photo2.jpg" alt="新年照片2" onclick="openModal(this.src)">
             </div>
         </div>
     </div>
@@ -154,28 +149,22 @@
 
     <!-- 滑动+放大脚本 -->
     <script>
-        // 滑动参数
-        let slideOffset = 0; // 滑动偏移量
-        const slideStep = 230; // 每次滑动距离（=照片宽度+间距）
+        let slideOffset = 0;
+        // 滑动步长：适配两张并排（单张宽度+间距）
+        const slideStep = document.querySelector('.photo-item').offsetWidth + 15; 
         const sliderTrack = document.getElementById('sliderTrack');
-        const trackWidth = sliderTrack.scrollWidth; // 轨道总宽度
-        const containerWidth = document.getElementById('photoSlider').clientWidth; // 容器宽度
+        const trackWidth = sliderTrack.scrollWidth;
+        const containerWidth = document.getElementById('photoSlider').clientWidth;
 
-        // 多图滑动函数
         function slidePhotos(direction) {
-            // 计算新偏移量
             slideOffset += direction * slideStep;
-            
-            // 边界限制：不滑出最左侧/最右侧
-            if (slideOffset > 0) slideOffset = 0; // 左边界
-            const maxOffset = containerWidth - trackWidth; // 右边界
+            // 边界限制
+            if (slideOffset > 0) slideOffset = 0;
+            const maxOffset = containerWidth - trackWidth;
             if (slideOffset < maxOffset) slideOffset = maxOffset;
-            
-            // 执行滑动
             sliderTrack.style.transform = `translateX(${slideOffset}px)`;
         }
 
-        // 打开放大弹窗
         function openModal(imgSrc) {
             const modal = document.getElementById('imgModal');
             const modalImg = document.getElementById('modalImg');
@@ -183,12 +172,10 @@
             modalImg.src = imgSrc;
         }
 
-        // 关闭弹窗
         function closeModal() {
             document.getElementById('imgModal').style.display = 'none';
         }
 
-        // ESC键关闭弹窗
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeModal();
         });

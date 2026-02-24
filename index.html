@@ -112,7 +112,7 @@
     <div class="diary">
         <h3>2026年2月24日 星期二</h3>
         <p>上班摸鱼研究了好久 终于成功了</p>
-        <p>一些家的故事，希望新的一年顺顺利利～</p>
+        <p>一些回家的故事 希望新的一年我们顺顺利利 心想事成</p>
     </div>
 
     <!-- 两张照片并排滑动区域 -->
@@ -131,7 +131,7 @@
             <div class="photo-item">
                 <img src="HZ260218-3.jpg" alt="家的故事2" onclick="openModal(this.src)">
             </div>
-            <!-- 如需添加更多照片，继续加即可（滑动时仍保持两张并排） -->
+            <!-- 更多照片（滑动时显示） -->
             <div class="photo-item">
                 <img src="HZ260218-4.jpg" alt="家的故事3" onclick="openModal(this.src)">
             </div>
@@ -147,24 +147,32 @@
         <img class="modal-content" id="modalImg">
     </div>
 
-    <!-- 滑动+放大脚本 -->
+    <!-- 修复后的滑动+放大脚本 -->
     <script>
-        let slideOffset = 0;
-        // 滑动步长：适配两张并排（单张宽度+间距）
-        const slideStep = document.querySelector('.photo-item').offsetWidth + 15; 
+        // 初始化变量（改为固定步长，避免加载时机问题）
+        let currentSlide = 0; // 用“组”来计数，每组2张照片
         const sliderTrack = document.getElementById('sliderTrack');
-        const trackWidth = sliderTrack.scrollWidth;
-        const containerWidth = document.getElementById('photoSlider').clientWidth;
+        // 固定滑动步长（适配两张并排，每次滑一组）
+        const slideStep = 100; // 按百分比滑动，更稳定
 
+        // 修复核心：按“组”滑动，逻辑更简单
         function slidePhotos(direction) {
-            slideOffset += direction * slideStep;
-            // 边界限制
-            if (slideOffset > 0) slideOffset = 0;
-            const maxOffset = containerWidth - trackWidth;
-            if (slideOffset < maxOffset) slideOffset = maxOffset;
-            sliderTrack.style.transform = `translateX(${slideOffset}px)`;
+            // 计算总组数（总照片数/每组2张）
+            const totalPhotos = document.querySelectorAll('.photo-item').length;
+            const totalGroups = Math.ceil(totalPhotos / 2) - 1; // 减1是因为默认显示第1组
+            
+            // 更新当前组
+            currentSlide += direction;
+            // 边界限制：不能滑出最左/最右
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide > totalGroups) currentSlide = totalGroups;
+            
+            // 执行滑动（按百分比，稳定不失效）
+            const slideDistance = -currentSlide * slideStep;
+            sliderTrack.style.transform = `translateX(${slideDistance}%)`;
         }
 
+        // 打开放大弹窗
         function openModal(imgSrc) {
             const modal = document.getElementById('imgModal');
             const modalImg = document.getElementById('modalImg');
@@ -172,10 +180,12 @@
             modalImg.src = imgSrc;
         }
 
+        // 关闭弹窗
         function closeModal() {
             document.getElementById('imgModal').style.display = 'none';
         }
 
+        // ESC键关闭弹窗
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeModal();
         });

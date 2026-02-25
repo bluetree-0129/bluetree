@@ -20,7 +20,6 @@
             min-height: 100vh;
         }
 
-        /* 夜空星星层 */
         .night-sky {
             position: fixed;
             top: 0;
@@ -43,7 +42,6 @@
             100% { opacity: 0.8; }
         }
 
-        /* 改成你喜欢的圆角小框样式 */
         .note-box {
             margin: 30px 0;
             padding: 12px 15px;
@@ -61,7 +59,6 @@
             line-height: 1.5;
         }
 
-        /* 照片一行3张 */
         .photo-grid {
             display: flex;
             flex-wrap: wrap;
@@ -79,7 +76,6 @@
             cursor: pointer;
         }
 
-        /* 放大弹窗 */
         .modal {
             display: none;
             position: fixed;
@@ -109,12 +105,10 @@
 
 <body>
 
-<!-- 星星 -->
 <div class="night-sky"></div>
 
 <h1>🌲 Blue Tree's Nook </h1>
 
-<!-- 改成你喜欢的圆角小框 -->
 <div class="note-box">
     <div class="note-date">2026-02-24</div>
     <div class="note-text">上班摸鱼研究了好久 终于成功了</div>
@@ -128,6 +122,19 @@
     <div class="photo-item"><img src="HZ260218-3.jpg" onclick="openModal(this.src)"></div>
     <div class="photo-item"><img src="HZ260218-4.jpg" onclick="openModal(this.src)"></div>
     <div class="photo-item"><img src="HZ260218-5.jpg" onclick="openModal(this.src)"></div>
+</div>
+
+<!-- 碎碎念 -->
+<div class="note-box">
+    <div class="note-date">2026-0X-XX</div>
+    <div class="note-text">是风就浩荡 是钢就铿锵 不用谁看见你眼底的星</div>
+</div>
+
+<!-- 标题放到这里 -->
+<h3>惊蛰无声 </h3>
+
+<div class="photo-grid">
+    <div class="photo-item"><img src="还有明天.jpg" onclick="openModal(this.src)"></div>
 </div>
 
 <div class="modal" id="imgModal" onclick="closeModal()">
@@ -147,7 +154,6 @@
         if (e.key === "Escape") closeModal();
     });
 
-    // 星星
     const sky = document.querySelector(".night-sky");
     for(let i=0; i<40; i++){
         let star = document.createElement("div");
